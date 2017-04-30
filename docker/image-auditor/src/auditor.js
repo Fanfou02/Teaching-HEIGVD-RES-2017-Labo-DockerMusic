@@ -1,15 +1,15 @@
 /*
- This program simulates a "data collection station", which joins a multicast
- group in order to receive measures published by thermometers (or other sensors).
- The measures are transported in json payloads with the following format:
-   {"timestamp":1394656712850,"location":"kitchen","temperature":22.5}
+ This program simulates an auditor, which joins a multicast
+ group in order to receive sounds published by musicians.
+ The sounds are transported in json payloads with the following format:
+   {"uuid":1394656712850,"Instrument":"piano","activeSince":Saturday 9h00}
  Usage: to start the station, use the following command in a terminal
-   node station.js
+   node auditor.js
 */
 
 /*
  * We have defined the multicast address and port in a file, that can be imported both by
- * thermometer.js and station.js. The address and the port are part of our simple 
+ * auditor.js and musician.js. The address and the port are part of our simple 
  * application-level protocol
  */
 var protocol = require('./protocol');

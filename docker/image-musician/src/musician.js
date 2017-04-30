@@ -1,27 +1,23 @@
 /*
-* We define the instruments that a musician can play and the sound of each one.
+ This program simulates a musician, which publishes the sound of his instrument
+ on a multicast group. Other programs can join the group and receive the sounds. The
+ sounds are transported in json payloads with the following format:
+   {"uuid":1394656712850,"instrument":"kitchen","activeSince":22.5}
+ Usage: to start a musician, type the following command in a terminal
+        (of course, you can run several musicians in parallel and observe that all
+        sounds are transmitted via the multicast group):
+   node musician.js instrument
 */
-const Instruments = {
-	piano: "ti-ta-ti",
-	trumpet: "pouet",
-	flute: "trulu",
-	violin: "gzi-gzi",
-	drum: "boum-boum"
-};
+
 
 /*
- This program simulates a "smart" thermometer, which publishes the measured temperature
- on a multicast group. Other programs can join the group and receive the measures. The
- measures are transported in json payloads with the following format:
-   {"timestamp":1394656712850,"location":"kitchen","temperature":22.5}
- Usage: to start a thermometer, type the following command in a terminal
-        (of course, you can run several thermometers in parallel and observe that all
-        measures are transmitted via the multicast group):
-   node thermometer.js location temperature variation
-*/
-
+ * The protocol where the port number and broadcast adress is define
+ */
 var protocol = require('./protocol');
 
+/*
+ * We use uuid module for identificate musicians
+ */
 var uuid = require('uuid');
 
 /*
@@ -34,10 +30,21 @@ var dgram = require('dgram');
  */
 var s = dgram.createSocket('udp4');
 
+
 /*
- * Let's define a javascript class for our thermometer. The constructor accepts
- * a location, an initial temperature and the amplitude of temperature variation
- * at every iteration
+* We define the instruments that a musician can play and the sound of each one.
+*/
+const Instruments = {
+	piano: "ti-ta-ti",
+	trumpet: "pouet",
+	flute: "trulu",
+	violin: "gzi-gzi",
+	drum: "boum-boum"
+};
+
+/*
+ * Let's define a javascript class for our Musician. The constructor accepts
+ * an instrument.
  */
 function Musician(Instrument) {
 
@@ -45,14 +52,13 @@ function Musician(Instrument) {
 	this.uuid = uuid.v4();
 	this.activeSince = new Date().toString();
 
-/*
-   * We will simulate temperature changes on a regular basis. That is something that
-   * we implement in a class method (via the prototype)
+  /*
+   * We will send sounds every 500 ms in the multicast group
    */
 	Musician.prototype.update = function() {
 	 /*
-	  * Let's create the measure as a dynamic javascript object, 
-	  * add the 3 properties (timestamp, location and temperature)
+	  * Let's create the infos as a dynamic javascript object, 
+	  * add the 3 properties (uuid, instrument and activeSince)
 	  * and serialize the object to a JSON string
 	  */
 		var infos = {
@@ -74,7 +80,7 @@ function Musician(Instrument) {
 	}
 
 /*
-	 * Let's take and send a measure every 500 ms
+	 * Let's take and send an info every 500 ms
 	 */
 	setInterval(this.update.bind(this), 500);
 
